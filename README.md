@@ -48,6 +48,6 @@ npx json-server -w db.json
 - README.md
 
 ## Author
-yonathan alexis perez ruiz
-Group: Tesla
+- yonathan alexis perez ruiz
+- Group: Tesla
 
