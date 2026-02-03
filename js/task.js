@@ -3,64 +3,111 @@ const titleTask = document.getElementById("title");
 const descriTask = document.getElementById("description");
 const stateTask = document.getElementById("status");
 const taskList = document.getElementById("taskList");
-const nameUser = document.getElementById("nameUserlogged")
+const nameUser = document.getElementById("nameUserlogged");
 
 const urlTask = "http://localhost:3000/task";
 
-
-
 const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
-//console.log(currentUser)
 
 let temporaryTask = [];
+let cart = []; 
+let editingId = null; // 🔥 para saber si estamos editando
 
-form.addEventListener("submit",registerTask);
+
+
+/* =========================
+   REGISTER
+========================= */
+form.addEventListener("submit", registerTask);
+
+
+/* =========================
+   USER
+========================= */
+
+
 
 async function chargeUser(){
+
     const res = await fetch("http://localhost:3000/users");
-    const user = await res.json()
-    
-    nameUser.innerHTML = ""
-    
+    const user = await res.json();
+
+    nameUser.innerHTML = "";
+
     user.forEach(p => {
-        const parra = document.createElement("p");
-        
-        parra.innerHTML = `
-            <p> Welcome ${p.name} !!</p>
-        `;
+
         if(currentUser.name === p.name){
-            nameUser.appendChild(parra)
+
+            const parra = document.createElement("p");
+            parra.textContent = `Welcome ${p.name} !!`;
+
+            nameUser.appendChild(parra);
         }
-           
     });
 }   
 
+
+/* =========================
+   CREATE or UPDATE TASK
+========================= */
 async function registerTask(e) {
-     e.preventDefault();
-     const name = titleTask.value.trim().toLowerCase();
-     const description = descriTask.value.trim();
-     const state = stateTask.value;
-    
+
+    e.preventDefault();
+
+    const name = titleTask.value.trim().toLowerCase();
+    const description = descriTask.value.trim();
+    const state = stateTask.value;
+
     if(!name || !description || !state){
         alert("Complete all fields");
         return;
     }
-    const res = await fetch(urlTask);
-    const task = await res.json();
 
-     await fetch(urlTask, {
-        method: "POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({ name, description, state })
-    });
+    const data = {
+        name,
+        description,
+        state,
+        userId: currentUser.id
+    };
 
-    alert("Task save!");
+    cart.push(data)
+
+    /* 🔥 SI EDITANDO → PATCH */
+    if(editingId){
+
+        await fetch(`${urlTask}/${editingId}`, {
+            method: "PATCH",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify(data)
+        });
+
+        alert("Task updated!");
+        editingId = null;
+
+    }
+    /* 🔥 SI NUEVO → POST */
+    else{
+
+        await fetch(urlTask, {
+            method: "POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify(data)
+        });
+
+        alert("Task saved!");
+    }
+
     form.reset();
+    loadTasks();
 }
 
+
+/* =========================
+   LOAD TASKS
+========================= */
 async function loadTasks() {
 
-    const res = await fetch("http://localhost:3000/task");
+    const res = await fetch(urlTask);
     const task = await res.json();
 
     taskList.innerHTML = "";
@@ -69,7 +116,6 @@ async function loadTasks() {
 
         const li = document.createElement("li");
 
-        // 🔥 SOLO ESTILOS (no lógica)
         li.className = `
             bg-white rounded-2xl shadow-md p-4
             hover:shadow-xl transition
@@ -77,24 +123,25 @@ async function loadTasks() {
         `;
 
         li.innerHTML = `
-            <div class="font-semibold text-lg">
-                ${p.name}
-            </div>
+            <div class="font-semibold text-lg">${p.name}</div>
+            <div class="text-gray-500">${p.description}</div>
+            <div class="text-gray-500">${p.state}</div>
 
-            <div class="text-gray-500">
-                ${p.description}
-            </div>
-             <div class="text-gray-500">
-                ${p.state}
-            </div>
+            <div class="flex gap-2">
 
-          
+                <button
+                    class="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-2 rounded-xl transition"
+                    onclick="editTask('${p.id}','${p.name}','${p.description}','${p.state}')">
+                    update
+                </button>
 
-             <button
-                class="bg-blue-500 hover:bg-blue-600 text-white py-1 rounded-xl transition"
-                onclick="deleteTask(${p.id})">
-                    delete Task
-            </button>
+                <button
+                    class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-2 rounded-xl transition"
+                    onclick="deleteTask('${p.id}')">
+                    delete
+                </button>
+
+            </div>
         `;
 
         taskList.appendChild(li);
@@ -102,22 +149,27 @@ async function loadTasks() {
 }
 
 async function deleteTask(id){
-    const res = await fetch("http://localhost:3000/task",{
 
-    
-        method: "DELETE",
-        headers : {"Content-Type":"application/json"},
-        body : JSON.stringify(order)
+    await fetch(`${urlTask}/${id}`, {
+        method: "DELETE"
     });
-    const task = await res.json()
-
-    console.log(task)
-
-    console.log(task.slice(id,1 ))
+    alert("Task deleted");
+    loadTasks();
 }
 
 
-async function saveOrder() {
+function editTask(id, name, description, state){
+
+    titleTask.value = name;
+    descriTask.value = description;
+    stateTask.value = state;
+
+    editingId = id; // 🔥 activar modo edición
+
+    titleTask.focus();
+}
+
+ async function saveOrder() {
 
     if (cart.length === 0){
         alert("cart empty");
@@ -126,11 +178,11 @@ async function saveOrder() {
 
     const order ={
         userId : currentUser.id,
-        item : cart,        
-        date: new Date().toDateString()
+        item : cart,
+        date: new Date().toISOString()
     };
 
-    await fetch("http://localhost:3000/orders",{
+    await fetch("http://localhost:3000/task",{
         method: "POST",
         headers : {"Content-Type":"application/json"},
         body : JSON.stringify(order)
@@ -138,31 +190,13 @@ async function saveOrder() {
 
     alert("save Order...");
 
-    cart = [];
-    renderCart();
+
 }
-
-const btn = document.createElement("button");
-
-btn.textContent = "Buy";
-
-btn.className = `
-    fixed bottom-6 right-6
-    bg-green-500 hover:bg-green-600
-    text-white px-6 py-3
-    rounded-2xl shadow-xl
-    transition
-`;
-
-btn.onclick = saveOrder;
-
-document.body.appendChild(btn);
+ 
 
 
 
 
-
-
-
+/* INIT */
 loadTasks();
 chargeUser();

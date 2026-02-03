@@ -15,6 +15,7 @@ async function registerUser(e){
     const email = emails.value.trim();
     const confPass = confirmpass.value.trim()
     const role = "user";
+    const date =  new Date().toISOString();
 
     if(!name || !pass || !email || !confPass){
         alert("Complete all fields");

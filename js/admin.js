@@ -13,7 +13,7 @@ async function loadData(){
     const usersRes = await fetch("http://localhost:3000/users");
     users = await usersRes.json();
 
-    const ordersRes = await fetch("http://localhost:3000/orders");
+    const ordersRes = await fetch("http://localhost:3000/task");
     orders = await ordersRes.json();
 
     renderCards(users);
@@ -83,7 +83,7 @@ function toggleDetails(div, userOrders){
     div.innerHTML = userOrders.map(order => {
 
         const itemsHTML = (order.items || [] ).map(i =>
-            `<li>${i.name} - $${i.price}</li>`
+            `<li>${i.name} - $${i.description}</li>`
         ).join("");
 
         const date = new Date(order.date).toLocaleString();
@@ -92,7 +92,7 @@ function toggleDetails(div, userOrders){
             <div class="mb-4 bg-gray-50 p-3 rounded-lg">
                 <p class="text-sm font-semibold">Date: ${date}</p>
                 <ul class="ml-4 list-disc">${itemsHTML}</ul>
-                <p class="font-bold mt-2">Total: $${order.total}</p>
+                <p class="font-bold mt-2">Description: ${order.description}</p>
             </div>
         `;
     }).join("");
