@@ -1,0 +1,63 @@
+{
+  "users": [
+    {
+      "id": "188d",
+      "name": "yonathan",
+      "password": "123456",
+      "email": "yonathan@ale.com",
+      "role": "admin"
+    },
+    {
+      "id": "fe24",
+      "name": "janner",
+      "password": "123456",
+      "email": "janner@tl.com",
+      "role": "user"
+    },
+    {
+      "id": "3ad8",
+      "name": "aaaa",
+      "password": "123456",
+      "role": "user"
+    }
+  ],
+  "task": [
+    {
+      "id": "7fd4",
+      "name": "asdasd",
+      "description": "sdasdasd",
+      "state": "In Progress"
+    },
+    {
+      "id": "83cf",
+      "name": "asdads",
+      "description": "asdasd",
+      "state": "Completed"
+    },
+    {
+      "id": "e8a3",
+      "name": "asdasd",
+      "description": "asdasd",
+      "state": "Completed"
+    },
+    {
+      "id": "246a",
+      "name": "asd",
+      "description": "sad",
+      "state": "In Progress"
+    },
+    {
+      "id": "584e",
+      "name": "ad",
+      "description": "asdasd",
+      "state": "In Progress"
+    },
+    {
+      "id": "6b6d",
+      "name": "asdasd",
+      "description": "asdasd",
+      "state": "Completed"
+    }
+  ],
+  "orders": []
+}

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+</head>
+
+<body class="bg-gray-100 min-h-screen p-8">
+    
+    <h1 class="text-3xl font-bold mb-6">Admin Dashboard</h1>
+
+    <button onclick="logout()" 
+        class="mb-6 bg-red-500 text-white px-4 py-2 rounded">
+        Logout
+    </button>
+
+    <!-- filtro -->
+    <input 
+        id="search"
+        placeholder="Search user..."
+        class="mb-6 p-2 border rounded w-64"
+    >
+
+    <!-- contenedor tarjetas -->
+    <div id="userCards" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+
+
+    <!-- guard -->
+    <script src="../js/authGuard.js"></script>
+    <script>
+        requireAuth(["admin"]);
+    </script>
+
+
+
+
+
+        <!-- guard -->
+    <script src="../js/authGuard.js"></script>
+    <script>
+        requireAuth(["admin"]);
+    </script>
+
+
+    <script src="../js/admin.js"></script>
+
+</body>
+</html>
